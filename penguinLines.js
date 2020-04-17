@@ -2,7 +2,9 @@ var success = function(penguins)
 {
     console.log("Data Collected", penguins);
     console.log(penguins[0].quizes[0].day);
+ //   console.log(getquizgrades(penguins));
     lineplot(penguins);
+    
 };
 
 var failure = function(error)
@@ -11,7 +13,16 @@ var failure = function(error)
 };
 
 var penguinPromise = d3.json("classData.json");
-penguinPromise.then(success, failure)
+penguinPromise.then(success, failure);
+
+//var getquizgrades = function(penguin)
+//{
+//    var quizgrade=penguin.quizes.map(function(quiz){
+//        return quiz.grade;
+ //   });
+//return quizgrade;
+//}
+
 
 var lineplot= function(penguin){ 
     
@@ -39,6 +50,6 @@ var svg= d3.select("svg")
         .datum(penguin)
         .attr("class","line")
         .attr("d",line)
-}
+};
         
         
