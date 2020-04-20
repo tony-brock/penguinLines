@@ -1,3 +1,6 @@
 .labels {
     fill:red
 }
+#lines:hover{
+   opacity: 0.5  
+}

@@ -72,8 +72,7 @@ var drawgraph= function(penguins)
     var screen = {width:500, height:400};
     var margins = {top:25, bottom:40, left:70, right:40};
     var graph = {width:screen.width-margins.left-margins.right, height:screen.height-margins.top-margins.bottom};
-
-
+    
 var svg= d3.select("#line-Plot")
     .attr("width", screen.width)
     .attr("height", screen.height)
@@ -101,6 +100,7 @@ var g = d3.select("#graph")
         .data(penguins)
         .enter()
         .append("g")
+        .attr("id", "lines");
     
     lines.append("path")
         .datum(function(penguin){
@@ -109,9 +109,29 @@ var g = d3.select("#graph")
         .attr("class","line")
         .attr("d",linegen)
         .attr("fill", "none")
-        .style("stroke","red");
+        .style("stroke","red")
+        .on("mouseover", tooltip)
+        .on("mouseout", function(){d3.select("#tooltip")
+        .classed("hidden", true)});
     
 createLabels(screen, margins, graph, penguins);
 createAxes(graph,margins,screen, xScale,yScale);
+    
+
 
 };
+
+var tooltip= function(penguins){
+        d3.select("img")
+            var xPosition= d3.event.pageX
+            var yPosition= d3.event.pageY
+            
+            var base= d3.select("#tooltip")
+            .style("top", yPosition+"px")
+            .style("left", xPosition+"px")
+            .classed("hidden", false)
+            
+            base.select("img")
+                .attr("src", function(){
+                return "imgs/"+ penguins.picture
+            })};
