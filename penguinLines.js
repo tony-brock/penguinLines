@@ -66,6 +66,37 @@ var createLabels = function(screen, margins, graph, penguins)
  
 };
 
+var getmeanquiz= function(penguin)
+{
+    var quizgrades= penguin.quizes.map(function(quiz){
+        return quiz.grade
+    })
+    return d3.mean(quizgrades)
+}; 
+
+//create the tooltip
+var tooltip= function(penguin)
+{
+    d3.select("img")
+    var xPosition= d3.event.pageX
+    var yPosition= d3.event.pageY
+    
+            
+    var base= d3.select("#tooltip")
+                .style("top", yPosition+"px")
+                .style("left", xPosition+"px")
+                .classed("hidden", false)
+            
+            base.select("img")
+                .attr("src", function(){
+                return "imgs/"+ penguin.picture
+            });
+            base.select("#quiz")
+                .classed("hidden", false)
+                .text("Quiz Mean:"+"   "+getmeanquiz(penguin));
+            
+};
+
 //draw the Graph
 var drawgraph= function(penguins)
 {    
@@ -91,8 +122,9 @@ var g = d3.select("#graph")
     
     //takes data that represents a point and creates a point in the line
      var linegen= d3.line()
-    .y(function(quiz){return yScale(quiz.grade)})
-        .x(function(quiz){return xScale(quiz.day)});
+        .y(function(quiz){return yScale(quiz.grade)})
+        .x(function(quiz){return xScale(quiz.day)})
+        .curve(d3.curveCardinal);
     
 
     var lines= d3.select("g.graph")
@@ -100,38 +132,40 @@ var g = d3.select("#graph")
         .data(penguins)
         .enter()
         .append("g")
-        .attr("id", "lines");
+        .attr("id", "lines")
+        .attr("stroke-width", 1.5)
+        .on("mouseover", tooltip, function(subject)
+        {   
+            if(! d3.select(this).classed("off"))
+            {
+            d3.selectAll("#line")
+            .classed("fade",true);
+            
+            d3.select(this)
+                .classed("fade",false)
+            }
+        })
+        .on("mouseout", function()                                     {d3.select("#tooltip")
+                            .classed("hidden", true)}, function(penguins)
+           {
+            if(! d3.select(this).classed("off"))
+            {
+            
+            d3.selectAll("#line")
+                .classed("fade",false);
+            }});
     
     lines.append("path")
         .datum(function(penguin){
-        return penguin.quizes
+                return penguin.quizes
                                 })
         .attr("class","line")
         .attr("d",linegen)
         .attr("fill", "none")
         .style("stroke","red")
-        .on("mouseover", tooltip)
-        .on("mouseout", function(){d3.select("#tooltip")
-        .classed("hidden", true)});
+
     
 createLabels(screen, margins, graph, penguins);
 createAxes(graph,margins,screen, xScale,yScale);
-    
-
-
 };
 
-var tooltip= function(penguins){
-        d3.select("img")
-            var xPosition= d3.event.pageX
-            var yPosition= d3.event.pageY
-            
-            var base= d3.select("#tooltip")
-            .style("top", yPosition+"px")
-            .style("left", xPosition+"px")
-            .classed("hidden", false)
-            
-            base.select("img")
-                .attr("src", function(){
-                return "imgs/"+ penguins.picture
-            })};
